@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#faf7f2">
+  <title>暖日 — 個人行程與習慣</title>
+  <style>
+    :root {
+      --bg: #faf7f2;
+      --paper: #fffefa;
+      --ink: #342f2b;
+      --muted: #91877e;
+      --line: #eee7df;
+      --terracotta: #bd755c;
+      --terracotta-soft: #f4e4dc;
+      --sage: #8c9b7b;
+      --sage-soft: #e9eee3;
+      --butter: #e9c982;
+      --butter-soft: #f8f0dc;
+      --rose: #d7978b;
+      --shadow: 0 18px 55px rgba(76, 56, 40, .08);
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "PingFang TC", sans-serif; }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .app-shell { min-height: 100vh; display: grid; grid-template-columns: 250px minmax(0, 1fr); max-width: 1440px; margin: 0 auto; }
+    aside { padding: 38px 24px; border-right: 1px solid var(--line); display: flex; flex-direction: column; background: rgba(255,254,250,.4); }
+    .brand { display:flex; align-items:center; gap:12px; margin: 0 0 55px 7px; font-size: 20px; font-weight: 750; letter-spacing: .04em; }
+    .brand-mark { display:grid; place-items:center; width:38px; height:38px; color:#fff; border-radius:14px 14px 14px 5px; background:var(--terracotta); font-size:19px; }
+    .nav-label { margin: 0 0 12px 12px; color:#b0a69c; font-size:11px; font-weight:700; letter-spacing:.12em; }
+    .nav-list { display:grid; gap:7px; }
+    .nav-btn { width:100%; display:flex; align-items:center; gap:14px; border:0; border-radius:14px; padding:13px 14px; text-align:left; color:#82786f; background:transparent; font-weight:600; transition:.2s; }
+    .nav-btn:hover { background:#f4eee7; }
+    .nav-btn.active { color:#8c513d; background:var(--terracotta-soft); }
+    .nav-icon { width:20px; text-align:center; font-size:18px; }
+    .side-bottom { margin-top:auto; }
+    .quote-card { padding:18px; background:#f2eee5; border-radius:18px; color:#7c7568; font-size:12px; line-height:1.75; }
+    .quote-card strong { display:block; margin-bottom:5px; color:#78614e; font-size:13px; }
+    main { min-width:0; padding: 44px clamp(24px, 5vw, 72px) 70px; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:32px; }
+    .eyebrow { color:var(--terracotta); font-size:12px; font-weight:700; letter-spacing:.12em; }
+    h1 { margin:7px 0 0; font-size:clamp(27px, 4vw, 36px); letter-spacing:-.04em; }
+    .top-actions { display:flex; align-items:center; gap:13px; }
+    .today-chip { padding:9px 14px; color:#786f66; background:var(--paper); border:1px solid var(--line); border-radius:999px; font-size:12px; }
+    .avatar { width:40px; height:40px; border:0; border-radius:50%; color:#805c46; background:#ead8c8; font-weight:700; }
+    .page { display:none; animation:fade .25s ease; }
+    .page.active { display:block; }
+    @keyframes fade { from {opacity:.5; transform:translateY(4px)} to {opacity:1; transform:none} }
+    .welcome { display:flex; justify-content:space-between; align-items:flex-end; margin: 5px 0 22px; }
+    .welcome p { margin:8px 0 0; color:var(--muted); font-size:14px; }
+    .date-switch { display:flex; gap:6px; }
+    .date-switch button { width:34px; height:34px; border:1px solid var(--line); border-radius:50%; background:var(--paper); color:#80766c; }
+    .stat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:15px; margin-bottom:23px; }
+    .stat-card { position:relative; overflow:hidden; min-height:122px; padding:19px 20px; border-radius:var(--radius); background:var(--paper); border:1px solid rgba(238,231,223,.75); }
+    .stat-card:after { content:""; position:absolute; width:90px; height:90px; border-radius:50%; right:-24px; bottom:-36px; background:var(--tint); opacity:.55; }
+    .stat-card .label { color:var(--muted); font-size:12px; }
+    .stat-card .value { margin-top:11px; font-size:27px; font-weight:750; letter-spacing:-.04em; }
+    .stat-card .sub { margin-left:6px; color:var(--muted); font-size:11px; font-weight:500; letter-spacing:0; }
+    .section-head { display:flex; justify-content:space-between; align-items:center; margin:28px 0 13px; }
+    .section-head h2 { margin:0; font-size:17px; letter-spacing:-.02em; }
+    .section-head button { border:0; background:transparent; color:var(--terracotta); font-size:12px; font-weight:700; }
+    .task-list { display:grid; gap:10px; }
+    .task-row { display:flex; align-items:center; gap:13px; padding:15px 16px; background:var(--paper); border:1px solid var(--line); border-radius:17px; transition:.2s; }
+    .task-row:hover { transform:translateY(-1px); box-shadow:0 8px 20px rgba(75,50,32,.05); }
+    .check { flex:0 0 21px; width:21px; height:21px; border:1.5px solid #d7ccc1; border-radius:7px; background:transparent; color:white; display:grid; place-items:center; padding:0; font-size:13px; }
+    .check.done { background:var(--sage); border-color:var(--sage); }
+    .task-copy { min-width:0; flex:1; }
+    .task-title { font-size:13px; font-weight:650; }
+    .task-meta { display:flex; align-items:center; gap:8px; margin-top:5px; color:var(--muted); font-size:11px; }
+    .priority { display:inline-flex; align-items:center; gap:4px; }
+    .dot { width:6px; height:6px; border-radius:50%; background:var(--dot); }
+    .pill { padding:4px 8px; background:#f4efe8; color:#897b6e; border-radius:999px; font-size:10px; }
+    .reminder-icon { color:#aa8f71; font-size:14px; }
+    .task-row.is-done .task-title { color:#aaa19a; text-decoration:line-through; }
+    .task-note { margin-top:6px; color:#867b70; font-size:11px; line-height:1.5; white-space:pre-wrap; }
+    .task-actions { display:flex; align-items:center; gap:5px; margin-left:auto; }
+    .task-edit { border:0; background:transparent; color:#a07c64; padding:6px 8px; border-radius:8px; font-size:11px; font-weight:700; }
+    .task-edit:hover { background:#f5eee7; color:#805842; }
+    .habit-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+    .habit-card { padding:16px; border:1px solid var(--line); background:var(--paper); border-radius:18px; }
+    .habit-top { display:flex; align-items:center; gap:10px; }
+    .habit-emoji { width:37px; height:37px; display:grid; place-items:center; border-radius:13px; background:var(--habit-tint,#f5e9da); font-size:18px; }
+    .habit-name { font-weight:700; font-size:13px; }
+    .habit-target { color:var(--muted); font-size:10px; margin-top:3px; }
+    .habit-progress { display:flex; justify-content:space-between; align-items:center; margin-top:16px; color:#8c837a; font-size:10px; }
+    .progress-track { height:5px; margin-top:7px; overflow:hidden; border-radius:10px; background:#f0ece6; }
+    .progress-fill { height:100%; border-radius:inherit; background:var(--sage); transition:width .3s; }
+    .habit-foot { display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
+    .streak { color:#a97648; font-size:10px; font-weight:650; }
+    .habit-check { padding:6px 10px; border:1px solid #d7e0ce; border-radius:9px; background:#f2f5ee; color:#657456; font-size:10px; font-weight:700; }
+    .habit-check.checked { background:var(--sage); color:white; border-color:var(--sage); }
+    .habit-week { display:grid; grid-template-columns:repeat(7,1fr); gap:7px; margin-top:19px; }
+    .day-dot { text-align:center; color:#a79d93; font-size:9px; }
+    .day-dot span { display:grid; place-items:center; width:22px; height:22px; margin:5px auto 0; border-radius:50%; background:#f4f0ea; color:#968a7d; }
+    .day-dot.hit span { background:#dce5d2; color:#617251; }
+    .day-dot.today span { outline:1px solid var(--terracotta); }
+    .panel { padding:20px; background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); }
+    .task-toolbar { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px; }
+    .filter-row { display:flex; flex-wrap:wrap; gap:7px; }
+    .filter-btn { border:1px solid var(--line); background:var(--paper); color:#887e74; border-radius:999px; padding:7px 12px; font-size:11px; }
+    .filter-btn.active { border-color:#d9b4a4; color:#925a45; background:#f8eee9; }
+    .primary-btn { border:0; border-radius:12px; padding:11px 15px; background:var(--terracotta); color:white; font-size:12px; font-weight:700; box-shadow:0 6px 14px rgba(189,117,92,.2); }
+    .primary-btn:hover { background:#a9644d; }
+    .empty { padding:32px; text-align:center; color:var(--muted); font-size:13px; }
+    .habit-summary { display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:12px; margin-bottom:16px; }
+    .summary-box { padding:16px; border-radius:17px; background:var(--paper); border:1px solid var(--line); }
+    .summary-box span { display:block; color:var(--muted); font-size:11px; }
+    .summary-box strong { display:block; margin-top:8px; font-size:23px; }
+    .summary-box small { font-size:10px; color:var(--muted); font-weight:500; }
+    .habit-full-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+    .week-ring { color:var(--sage); }
+    .modal-backdrop { position:fixed; inset:0; z-index:10; display:none; align-items:center; justify-content:center; padding:20px; background:rgba(46,38,31,.35); backdrop-filter:blur(3px); }
+    .modal-backdrop.open { display:flex; }
+    .modal { width:min(460px,100%); max-height:90vh; overflow:auto; background:var(--paper); border-radius:24px; padding:25px; box-shadow:0 25px 80px rgba(40,30,22,.2); }
+    .modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    .modal-head h3 { margin:0; font-size:20px; }
+    .close-btn { width:32px; height:32px; border:0; border-radius:50%; background:#f3eee8; color:#746b63; font-size:19px; }
+    .field { margin-bottom:14px; }
+    .field label { display:block; margin-bottom:7px; font-size:12px; font-weight:700; color:#746b63; }
+    .field input, .field select { width:100%; border:1px solid #e7ded5; border-radius:11px; padding:11px 12px; outline:0; background:#fffdfa; color:var(--ink); }
+    .field input:focus, .field select:focus { border-color:#c58b74; box-shadow:0 0 0 3px #f4e4dc; }
+    .field-hint { margin-top:6px; color:#a2978d; font-size:10px; }
+    .modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:22px; }
+    .secondary-btn { padding:10px 15px; border:1px solid var(--line); background:transparent; border-radius:11px; color:#786f67; font-size:12px; }
+    .habit-modal-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .toast { position:fixed; z-index:20; left:50%; bottom:28px; transform:translate(-50%,15px); padding:11px 17px; border-radius:999px; background:#453d36; color:white; font-size:12px; opacity:0; transition:.25s; pointer-events:none; box-shadow:0 8px 25px rgba(0,0,0,.18); }
+    .toast.show { opacity:1; transform:translate(-50%,0); }
+    .mobile-nav { display:none; }
+    @media (max-width: 850px) {
+      .app-shell { grid-template-columns:1fr; }
+      aside { display:none; }
+      main { padding:28px 24px 105px; max-width:760px; width:100%; margin:auto; }
+      .mobile-nav { position:fixed; z-index:5; bottom:0; left:0; right:0; display:grid; grid-template-columns:repeat(3,1fr); padding:8px 14px calc(8px + env(safe-area-inset-bottom)); background:rgba(255,254,250,.94); border-top:1px solid var(--line); backdrop-filter:blur(14px); }
+      .mobile-nav .nav-btn { flex-direction:column; gap:4px; padding:7px 5px; text-align:center; font-size:10px; }
+      .mobile-nav .nav-icon { font-size:19px; }
+      .habit-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    }
+    @media (max-width: 560px) {
+      main { padding:22px 17px 100px; }
+      .topbar { margin-bottom:22px; }
+      .today-chip { font-size:10px; padding:8px 10px; }
+      .avatar { width:36px; height:36px; }
+      .stat-grid { gap:8px; }
+      .stat-card { min-height:104px; padding:14px 12px; border-radius:17px; }
+      .stat-card .label { font-size:10px; }
+      .stat-card .value { font-size:23px; }
+      .stat-card .sub { display:block; margin:3px 0 0; font-size:9px; }
+      .habit-grid { grid-template-columns:1fr; }
+      .habit-card { padding:14px; }
+      .habit-card.dashboard-habit { display:grid; grid-template-columns:1fr auto; align-items:center; }
+      .dashboard-habit .habit-progress, .dashboard-habit .progress-track, .dashboard-habit .habit-week { display:none; }
+      .dashboard-habit .habit-foot { margin:0; gap:10px; }
+      .task-row { padding:13px 12px; }
+      .task-toolbar { align-items:flex-start; flex-direction:column; }
+      .task-toolbar .primary-btn { align-self:stretch; }
+      .habit-summary { grid-template-columns:1fr 1fr; }
+      .habit-summary .summary-box:first-child { grid-column:span 2; }
+      .habit-full-list { grid-template-columns:1fr; }
+      .welcome { align-items:center; }
+      .quote-card { display:none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside><div class="brand"><span class="brand-mark">☀</span><span>暖日</span></div><div class="nav-label">日常管理</div><nav class="nav-list" aria-label="主要導覽"><button class="nav-btn active" data-page="today"><span class="nav-icon">◷</span>今天</button><button class="nav-btn" data-page="tasks"><span class="nav-icon">☷</span>任務清單 <span id="side-task-count" style="margin-left:auto;font-size:11px;color:#a69a8e"></span></button><button class="nav-btn" data-page="habits"><span class="nav-icon">✿</span>習慣追蹤</button></nav><div class="side-bottom"><div class="quote-card"><strong>給自己一點空間</strong>每一步都值得被看見。今天不必完美，只要比昨天更靠近一點點。</div></div></aside>
+    <main><header class="topbar"><div><div class="eyebrow">讓日常，慢慢發光</div><h1 id="page-title">今天</h1></div><div class="top-actions"><div class="today-chip" id="today-chip"></div><button class="avatar" aria-label="個人設定" title="個人設定">安</button></div></header>
+      <section class="page active" id="page-today"><div class="welcome"><div><div style="font-weight:700;font-size:15px">早安，今天也辛苦了 ☁️</div><p>把注意力放在當下的一小步。</p></div><div class="date-switch"><button aria-label="前一天" id="prev-day">‹</button><button aria-label="後一天" id="next-day">›</button></div></div><div class="stat-grid" id="today-stats"></div><div class="section-head"><h2>今天的任務</h2><button data-go="tasks">查看全部 →</button></div><div class="task-list" id="today-task-list"></div><div class="section-head"><h2>今天的習慣</h2><button data-go="habits">習慣總覽 →</button></div><div class="habit-grid" id="today-habit-list"></div></section>
+      <section class="page" id="page-tasks"><div class="welcome"><div><div style="font-weight:700;font-size:15px">一步一步，完成重要的事</div><p>安排得剛剛好，就是很好的開始。</p></div></div><div class="task-toolbar"><div class="filter-row" id="task-filters"><button class="filter-btn active" data-filter="all">全部</button><button class="filter-btn" data-filter="open">未完成</button><button class="filter-btn" data-filter="today">今天到期</button><button class="filter-btn" data-filter="done">已完成</button></div><button class="primary-btn" id="add-task">＋ 新增任務</button></div><div class="panel"><div class="task-list" id="all-task-list"></div></div></section>
+      <section class="page" id="page-habits"><div class="welcome"><div><div style="font-weight:700;font-size:15px">為想成為的自己，留一點時間 🌱</div><p>每天一點點，累積成很棒的改變。</p></div><button class="primary-btn" id="add-habit">＋ 新增習慣</button></div><div class="habit-summary" id="habit-summary"></div><div class="section-head"><h2>本週的練習</h2><span style="font-size:11px;color:var(--muted)">週一至週日</span></div><div class="habit-full-list" id="all-habit-list"></div></section>
+    </main>
+  </div>
+  <nav class="mobile-nav" aria-label="手機導覽"><button class="nav-btn active" data-page="today"><span class="nav-icon">◷</span>今天</button><button class="nav-btn" data-page="tasks"><span class="nav-icon">☷</span>任務</button><button class="nav-btn" data-page="habits"><span class="nav-icon">✿</span>習慣</button></nav>
+  <div class="modal-backdrop" id="task-modal" role="dialog" aria-modal="true" aria-labelledby="task-modal-title"><form class="modal" id="task-form"><div class="modal-head"><h3 id="task-modal-title">新增任務</h3><button type="button" class="close-btn" data-close="task-modal" aria-label="關閉">×</button></div><div class="field"><label for="task-title">任務名稱</label><input id="task-title" required maxlength="80" placeholder="例如：整理本週工作計畫"></div><div class="habit-modal-grid"><div class="field"><label for="task-due">截止日期</label><input type="date" id="task-due" required></div><div class="field"><label for="task-priority">重要程度</label><select id="task-priority"><option value="high">高</option><option value="medium" selected>中</option><option value="low">低</option></select></div></div><div class="field"><label for="task-note">備註（選填）</label><textarea id="task-note" maxlength="500" rows="3" placeholder="補充任務細節、準備事項或相關資訊" style="width:100%;border:1px solid #e7ded5;border-radius:11px;padding:11px 12px;outline:0;background:#fffdfa;color:var(--ink);resize:vertical"></textarea><div class="field-hint">最多 500 字，備註會顯示在任務下方。</div></div><div class="field"><label for="task-reminder">提醒時間（選填）</label><input type="datetime-local" id="task-reminder"><div class="field-hint">依照你選擇的日期與時間提醒；此原型會在頁面開啟時檢查提醒。</div></div><div class="modal-actions"><button type="button" class="secondary-btn" data-close="task-modal">取消</button><button class="primary-btn" type="submit">儲存任務</button></div></form></div>
+  <div class="modal-backdrop" id="habit-modal" role="dialog" aria-modal="true" aria-labelledby="habit-modal-title"><form class="modal" id="habit-form"><div class="modal-head"><h3 id="habit-modal-title">新增習慣</h3><button type="button" class="close-btn" data-close="habit-modal" aria-label="關閉">×</button></div><div class="field"><label for="habit-name">習慣名稱</label><input id="habit-name" required maxlength="40" placeholder="例如：閱讀"></div><div class="habit-modal-grid"><div class="field"><label for="habit-emoji">圖示</label><select id="habit-emoji"><option>🌿</option><option>💧</option><option>📚</option><option>🏃</option><option>🧘</option><option>✍️</option><option>☀️</option><option>🎨</option></select></div><div class="field"><label for="habit-target">每週目標（次）</label><select id="habit-target"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select></div></div><div class="field-hint">習慣支援每日打卡，並統計每週進度、連續天數和完成率。</div><div class="modal-actions"><button type="button" class="secondary-btn" data-close="habit-modal">取消</button><button class="primary-btn" type="submit">建立習慣</button></div></form></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script>
+    const today = new Date(); today.setHours(0,0,0,0);
+    const localISO = d => { const x=new Date(d.getTime()-d.getTimezoneOffset()*60000); return x.toISOString().slice(0,10); };
+    const offsetDate = (n) => { const d=new Date(today); d.setDate(d.getDate()+n); return localISO(d); };
+    const daysAgo = n => { const d=new Date(today); d.setDate(d.getDate()-n); return localISO(d); };
+    const initialState={
+      tasks:[
+        {id:1,title:'整理本週工作計畫',due:offsetDate(0),priority:'high',reminder:null,note:'確認本週三項優先目標',done:false},
+        {id:2,title:'回覆設計提案的意見',due:offsetDate(0),priority:'medium',reminder:null,note:'整理要給設計師的回饋',done:false},
+        {id:3,title:'預約牙醫年度檢查',due:offsetDate(1),priority:'low',reminder:null,note:'記得確認保險資料',done:false},
+        {id:4,title:'繳交線上課程作業',due:offsetDate(0),priority:'high',reminder:null,note:'',done:true},
+        {id:5,title:'整理書桌與工作空間',due:offsetDate(2),priority:'low',reminder:null,note:'',done:false}
+      ],
+      habits:[
+        {id:11,name:'喝足 8 杯水',emoji:'💧',target:7,checks:[daysAgo(6),daysAgo(5),daysAgo(4),daysAgo(3),daysAgo(2),daysAgo(1)]},
+        {id:12,name:'閱讀 15 分鐘',emoji:'📚',target:5,checks:[daysAgo(6),daysAgo(4),daysAgo(3),daysAgo(1)]},
+        {id:13,name:'伸展與活動',emoji:'🌿',target:3,checks:[daysAgo(5),daysAgo(3),daysAgo(1)]}
+      ]
+    };
+    let data;
+    try { data=JSON.parse(localStorage.getItem('warmday-data'))||initialState; } catch { data=initialState; }
+    let activePage='today', taskFilter='all', dayOffset=0, editingTaskId=null;
+    const priorityInfo={high:{label:'高優先',color:'#c77760'},medium:{label:'中優先',color:'#d1a956'},low:{label:'低優先',color:'#8c9b7b'}};
+    const weekKeys=()=>{ const now=new Date(today); now.setDate(now.getDate()-((now.getDay()+6)%7)); return Array.from({length:7},(_,i)=>{const d=new Date(now);d.setDate(d.getDate()+i);return localISO(d);}); };
+    const keys=weekKeys();
+    const save=()=>localStorage.setItem('warmday-data',JSON.stringify(data));
+    const fmt=(iso,opts={month:'numeric',day:'numeric',weekday:'short'})=>new Intl.DateTimeFormat('zh-TW',opts).format(new Date(iso+'T12:00:00'));
+    const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function showToast(msg){ const el=document.getElementById('toast'); el.textContent=msg;el.classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>el.classList.remove('show'),2400); }
+    function taskHTML(t){const p=priorityInfo[t.priority]||priorityInfo.medium;return `<div class="task-row ${t.done?'is-done':''}"><button class="check ${t.done?'done':''}" data-task-check="${t.id}" aria-label="Complete task">${t.done?'✓':''}</button><div class="task-copy"><div class="task-title">${safe(t.title)}</div>${t.note?`<div class="task-note">${safe(t.note)}</div>`:''}<div class="task-meta"><span>${fmt(t.due)}</span><span class="priority"><i class="dot" style="--dot:${p.color}"></i>${p.label}</span>${t.reminder?`<span class="reminder-icon" title="Reminder ${safe(t.reminder)}">◷ ${safe(t.reminder.replace('T',' '))}</span>`:''}</div></div><button class="task-edit" data-task-edit="${t.id}" aria-label="Edit ${safe(t.title)}">編輯</button></div>`;}
+    function sortTasks(tasks){const rank={high:0,medium:1,low:2};return [...tasks].sort((a,b)=>(rank[a.priority]??1)-(rank[b.priority]??1)||a.due.localeCompare(b.due)||Number(a.done)-Number(b.done));}
+    function renderTasks(){const todayKey=offsetDate(dayOffset);const openToday=sortTasks(data.tasks.filter(t=>t.due===todayKey&&!t.done)),doneToday=data.tasks.filter(t=>t.due===todayKey&&t.done);document.getElementById('today-task-list').innerHTML=openToday.length?openToday.map(taskHTML).join(''):'<div class="empty">今天沒有待辦</div>';const all=sortTasks(data.tasks.filter(t=>taskFilter==='all'||(taskFilter==='open'&&!t.done)||(taskFilter==='done'&&t.done)||(taskFilter==='today'&&t.due===offsetDate(0))));document.getElementById('all-task-list').innerHTML=all.length?all.map(taskHTML).join(''):'<div class="empty">尚無任務</div>';document.getElementById('side-task-count').textContent=data.tasks.filter(t=>!t.done).length;document.getElementById('today-stats').innerHTML=`<div>今日待辦 ${openToday.length}</div><div>已完成 ${doneToday.length}</div><div>習慣 ${data.habits.filter(h=>h.checks.includes(todayKey)).length}/${data.habits.length}</div>`;document.getElementById('today-chip').textContent=fmt(todayKey,{month:'numeric',day:'numeric',weekday:'long'});document.getElementById('today-habit-list').innerHTML=data.habits.map(h=>habitHTML(h,true)).join('');}
+    function streakFor(h){let count=0, d=new Date(today); if(!h.checks.includes(localISO(d)))d.setDate(d.getDate()-1); while(h.checks.includes(localISO(d))){count++;d.setDate(d.getDate()-1);} return count;}
+    function habitHTML(h,dashboard=false){const done=h.checks.includes(offsetDate(0));const wk=keys.filter(k=>h.checks.includes(k)).length;const rate=Math.min(100,Math.round(wk/h.target*100));return `<article class="habit-card ${dashboard?'dashboard-habit':''}"><div class="habit-top"><div class="habit-emoji">${safe(h.emoji)}</div><div><div class="habit-name">${safe(h.name)}</div><div class="habit-target">每週目標 ${h.target} 次</div></div></div><div class="habit-progress"><span>本週進度</span><span>${wk} / ${h.target} 次</span></div><div class="progress-track"><div class="progress-fill" style="width:${rate}%"></div></div>${!dashboard?`<div class="habit-week">${keys.map((k,i)=>`<div class="day-dot ${h.checks.includes(k)?'hit':''} ${k===offsetDate(0)?'today':''}">${'一二三四五六日'[i]}<span>${h.checks.includes(k)?'✓':new Date(k+'T12:00:00').getDate()}</span></div>`).join('')}</div>`:''}<div class="habit-foot"><span class="streak">🔥 連續 ${streakFor(h)} 天</span><button class="habit-check ${done?'checked':''}" data-habit-check="${h.id}">${done?'✓ 已打卡':'＋ 打卡'}</button></div></article>`;}
+    function renderHabits(){const n=data.habits.length,checked=data.habits.filter(h=>h.checks.includes(offsetDate(0))).length,weekly=data.habits.reduce((s,h)=>s+keys.filter(k=>h.checks.includes(k)).length,0),total=data.habits.reduce((s,h)=>s+h.target,0),rate=total?Math.min(100,Math.round(weekly/total*100)):0,best=data.habits.reduce((m,h)=>Math.max(m,streakFor(h)),0);document.getElementById('habit-summary').innerHTML=`<div>本週完成率 ${rate}%</div><div>今日打卡 ${checked}/${n}</div><div>最長連續 ${best} 天</div>`;document.getElementById('all-habit-list').innerHTML=data.habits.map(h=>habitHTML(h)).join('');}
+    function render(){renderTasks();renderHabits();document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+activePage));document.querySelectorAll('.nav-btn[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===activePage));document.getElementById('page-title').textContent={today:'今天',tasks:'任務清單',habits:'習慣追蹤'}[activePage];}
+    function changePage(page){activePage=page;render();window.scrollTo({top:0,behavior:'smooth'});}
+    document.addEventListener('click',e=>{
+      const nav=e.target.closest('[data-page]');if(nav){changePage(nav.dataset.page);return;}
+      const go=e.target.closest('[data-go]');if(go){changePage(go.dataset.go);return;}
+      const edit=e.target.closest('[data-task-edit]');if(edit){openTaskEditor(Number(edit.dataset.taskEdit));return;}
+      const tc=e.target.closest('[data-task-check]');if(tc){const t=data.tasks.find(x=>x.id===Number(tc.dataset.taskCheck));if(t){t.done=!t.done;save();render();showToast('Task updated');}return;}
+      const hc=e.target.closest('[data-habit-check]');if(hc){const h=data.habits.find(x=>x.id===Number(hc.dataset.habitCheck)),k=offsetDate(0);if(h){h.checks=h.checks.includes(k)?h.checks.filter(x=>x!==k):[...h.checks,k];save();render();}return;}
+      const close=e.target.closest('[data-close]');if(close){document.getElementById(close.dataset.close).classList.remove('open');return;}
+      const filter=e.target.closest('[data-filter]');if(filter){taskFilter=filter.dataset.filter;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active',b===filter));renderTasks();}
+    });
+    document.getElementById('prev-day').addEventListener('click',()=>{dayOffset--;renderTasks();});
+    document.getElementById('next-day').addEventListener('click',()=>{dayOffset++;renderTasks();});
+    function openTaskEditor(id=null){
+      const form=document.getElementById('task-form');
+      form.reset();
+      editingTaskId=id;
+      const task=id===null?null:data.tasks.find(t=>t.id===id);
+      document.getElementById('task-modal-title').textContent=task?'編輯任務':'新增任務';
+      document.getElementById('task-title').value=task?.title||'';
+      document.getElementById('task-due').value=task?.due||offsetDate(0);
+      document.getElementById('task-priority').value=task?.priority||'medium';
+      document.getElementById('task-note').value=task?.note||'';
+      document.getElementById('task-reminder').value=task?.reminder||'';
+      document.getElementById('task-modal').classList.add('open');
+      document.getElementById('task-title').focus();
+    }
+    document.getElementById('add-task').addEventListener('click',()=>openTaskEditor());
+    document.getElementById('task-form').addEventListener('submit',e=>{
+      e.preventDefault();
+      const title=document.getElementById('task-title').value.trim();
+      if(!title)return;
+      const reminder=document.getElementById('task-reminder').value;
+      const fields={title,due:document.getElementById('task-due').value,priority:document.getElementById('task-priority').value,reminder:reminder||null,note:document.getElementById('task-note').value.trim()};
+      if(editingTaskId!==null){
+        const task=data.tasks.find(t=>t.id===editingTaskId);
+        if(task){const reminderChanged=task.reminder!==fields.reminder;Object.assign(task,fields);if(reminderChanged)delete task.reminded;}
+        showToast('任務已更新 ✨');
+      }else{
+        data.tasks.push({id:Date.now(),...fields,done:false});
+        showToast('任務已加入清單 ☀️');
+      }
+      save();e.target.reset();editingTaskId=null;
+      document.getElementById('task-modal-title').textContent='新增任務';
+      document.getElementById('task-modal').classList.remove('open');render();
+    });
+    document.getElementById('add-habit').addEventListener('click',()=>document.getElementById('habit-modal').classList.add('open'));
+    document.getElementById('habit-form').addEventListener('submit',e=>{e.preventDefault();data.habits.push({id:Date.now(),name:document.getElementById('habit-name').value.trim(),emoji:document.getElementById('habit-emoji').value,target:Number(document.getElementById('habit-target').value),checks:[]});save();e.target.reset();document.getElementById('habit-modal').classList.remove('open');render();showToast('?啁???遣蝡末鈭??Ｘ靘停憟??');});
+    document.querySelectorAll('.modal-backdrop').forEach(backdrop=>backdrop.addEventListener('click',e=>{if(e.target===backdrop)backdrop.classList.remove('open');}));
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-backdrop.open').forEach(m=>m.classList.remove('open'));});
+    function checkReminders(){const now=Date.now(),due=[];data.tasks.forEach(t=>{if(t.reminder&&!t.done&&!t.reminded&&new Date(t.reminder).getTime()<=now){t.reminded=true;due.push(t.title);}});if(due.length){save();showToast('任務提醒：'+due.join('、'));}}
+    function init(){document.getElementById('today-chip').textContent=new Intl.DateTimeFormat('zh-TW',{month:'long',day:'numeric',weekday:'long'}).format(today);render();checkReminders();setInterval(checkReminders,30000);}
+    init();
+  </script>
+</body>
+</html>
+
+
+
